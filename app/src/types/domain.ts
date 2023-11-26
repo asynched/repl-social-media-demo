@@ -12,10 +12,12 @@ export type User = Record<{
 export type Post = Record<{
   content: string
   userId: number
+  user: User
 }>
 
 export type Comment = Record<{
   content: string
   userId: number
   postId: number
+  user: User
 }>

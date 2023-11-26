@@ -1,4 +1,5 @@
 import { requiresAuth } from '@/auth/middlwares'
+import { logger } from '@/services/logger'
 import { prisma } from '@/services/prisma'
 import { repl } from '@/services/repl'
 import { zValidator } from '@hono/zod-validator'
@@ -44,12 +45,19 @@ posts.post('/', requiresAuth, zValidator('json', createPost), async (c) => {
     },
   })
 
-  repl.publish('posts', {
-    value: JSON.stringify({
-      type: 'create',
-      data: post,
-    }),
-  })
+  repl
+    .publish('posts', {
+      value: JSON.stringify({
+        type: 'create',
+        data: post,
+      }),
+    })
+    .then(() => {
+      logger.info('Published message to topic posts')
+    })
+    .catch((err) => {
+      logger.error('Failed to publish message to topic posts:', err)
+    })
 
   return c.json(post, { status: 201 })
 })

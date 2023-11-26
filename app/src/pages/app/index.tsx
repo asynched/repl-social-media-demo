@@ -1,36 +1,24 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useStore } from '@/hooks/useStore'
 import { authStore } from '@/stores/auth'
 import { client } from '@/services/http'
 import { useForm } from '@/hooks/useForm'
 import { Link, useNavigate } from 'react-router-dom'
-import { Post } from '@/types/domain'
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline'
 import { timeSince } from '@/utils/time'
+import { usePosts } from '@/hooks/usePosts'
+import { repl } from '@/services/repl'
 
 export default function App() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { user } = useStore(authStore)
 
   const [status, dispatch] = useForm(async (form) => {
     await client.post('/posts', {
       content: form.get('content'),
     })
-
-    queryClient.invalidateQueries({
-      queryKey: ['posts'],
-    })
   })
 
-  const { data: posts } = useQuery({
-    queryKey: ['posts'],
-    queryFn: () =>
-      client
-        .get<(Post & { user: { name: string } })[]>('/posts')
-        .then((r) => r.data),
-    initialData: [],
-  })
+  const [posts] = usePosts(repl)
 
   const handleSignOut = () => {
     localStorage.removeItem('@user')

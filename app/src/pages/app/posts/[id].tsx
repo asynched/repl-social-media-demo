@@ -30,11 +30,7 @@ export default function Post() {
   const { data: comments } = useQuery({
     queryKey: ['posts', params.id, 'comments'],
     queryFn: () =>
-      client
-        .get<(Comment & { user: { name: string } })[]>(
-          `/posts/${params.id}/comments`,
-        )
-        .then((r) => r.data),
+      client.get<Comment[]>(`/posts/${params.id}/comments`).then((r) => r.data),
     initialData: [],
   })
 
