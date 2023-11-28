@@ -1,3 +1,5 @@
+import { env } from '@/globals/env'
+
 type REPLClientOptions = {
   mode: 'standalone'
   url: string
@@ -52,5 +54,5 @@ class REPLClient {
 
 export const repl = new REPLClient({
   mode: 'standalone',
-  url: 'http://localhost:9000',
+  url: env.REPL_URL,
 })
