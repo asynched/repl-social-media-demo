@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const client = axios.create({
-  baseURL: import.meta.env.VITE_ENV_BASE_URL,
+  baseURL: import.meta.env.VITE_ENV_API_URL,
 })
 
 if (localStorage.getItem('@token')) {

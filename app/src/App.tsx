@@ -7,17 +7,26 @@ import SignIn from '@/pages'
 import SignUp from '@/pages/sign-up'
 import App from '@/pages/app'
 import Post from '@/pages/app/posts/[id]'
+import { Public } from './auth/Public'
 
 const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <SignIn />,
+    element: (
+      <Public>
+        <SignIn />
+      </Public>
+    ),
   },
   {
     path: '/sign-up',
-    element: <SignUp />,
+    element: (
+      <Public>
+        <SignUp />
+      </Public>
+    ),
   },
   {
     path: '/app',

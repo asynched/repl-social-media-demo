@@ -1,38 +1,29 @@
 import { useParams } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { client } from '@/services/http'
 import { useForm } from '@/hooks/useForm'
-import type { Post, Comment } from '@/types/domain'
+import type { Post } from '@/types/domain'
 import { timeSince } from '@/utils/time'
+import { useComments } from '@/hooks/useComments'
+import { repl } from '@/services/repl'
+import { useMemo } from 'react'
 
 export default function Post() {
   const params = useParams()
-  const queryClient = useQueryClient()
+  const postId = useMemo(() => Number(params.id), [params.id])
 
   const [status, dispatch] = useForm(async (form) => {
     await client.post(`/posts/${params.id}/comments`, {
       content: form.get('content'),
     })
-
-    queryClient.invalidateQueries({
-      queryKey: ['posts', params.id, 'comments'],
-    })
   })
 
   const { data: post } = useQuery({
-    queryKey: ['posts', params.id],
-    queryFn: () =>
-      client
-        .get<Post & { user: { name: string } }>(`/posts/${params.id}`)
-        .then((r) => r.data),
+    queryKey: ['posts', postId],
+    queryFn: () => client.get<Post>(`/posts/${params.id}`).then((r) => r.data),
   })
 
-  const { data: comments } = useQuery({
-    queryKey: ['posts', params.id, 'comments'],
-    queryFn: () =>
-      client.get<Comment[]>(`/posts/${params.id}/comments`).then((r) => r.data),
-    initialData: [],
-  })
+  const [comments] = useComments(repl, postId)
 
   if (!post) {
     return <div>Loading...</div>

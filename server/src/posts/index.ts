@@ -59,6 +59,8 @@ posts.post('/', requiresAuth, zValidator('json', createPost), async (c) => {
       logger.error('Failed to publish message to topic posts:', err)
     })
 
+  repl.create(`comments:${post.id}`)
+
   return c.json(post, { status: 201 })
 })
 
@@ -139,6 +141,24 @@ posts.post(
         userId: c.var.user.id,
         postId: post.id,
       },
+    })
+
+    repl.publish(`comments:${post.id}`, {
+      value: JSON.stringify({
+        type: 'create',
+        data: await prisma.comment.findUnique({
+          where: {
+            id: comment.id,
+          },
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        }),
+      }),
     })
 
     return c.json(comment, { status: 201 })

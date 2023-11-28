@@ -44,5 +44,5 @@ export class REPLClient {
 
 export const repl = new REPLClient({
   mode: 'standalone',
-  url: 'http://localhost:9000',
+  url: import.meta.env.VITE_ENV_REPL_URL,
 })
